@@ -1,9 +1,11 @@
 const characters = fetchData();
-const Container = document.querySelector("[data-js=container]");
+const container = document.querySelector("[data-js=container]");
+const nextButton = document.querySelector("[data-js=next-button]");
 
-function renderCards(characters) {
-  characters.forEach((character) => {
-    console.log(character);
+function renderCards(Fetch) {
+  const characterss = Fetch.results;
+
+  characterss.forEach((character) => {
     const cardListItem = document.createElement("li");
     cardListItem.className = "cardListItem";
     cardListItem.innerHTML = `
@@ -22,13 +24,22 @@ function renderCards(characters) {
     }</span>
     </div>
     `;
-    Container.append(cardListItem);
+    container.append(cardListItem);
+  });
+
+  nextButton.addEventListener("click", () => {
+    fetch(Fetch.info.next)
+      .then((response) => response.json())
+      .then((data) => renderCards(data))
+      .catch((error) => console.log(error));
   });
 }
 
 function fetchData() {
   fetch("https://rickandmortyapi.com/api/character")
     .then((response) => response.json())
-    .then((data) => renderCards(data.results))
+    .then((data) => {
+      renderCards(data);
+    })
     .catch((error) => console.log(error));
 }
